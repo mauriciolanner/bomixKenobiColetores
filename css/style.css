@@ -1,0 +1,19 @@
+* {
+    font-size: 20px;
+}
+
+html {
+    background-color: var(--bs-gray-100);
+}
+
+.container {
+    background-color: var(--bs-gray-100);
+}
+
+.row {
+    background-color: var(--bs-gray-100);
+}
+
+body {
+    background-color: var(--bs-gray-100) !important;
+}

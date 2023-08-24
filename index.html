@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/vue.js"></script>
+    <script src="./js/axios.js"></script>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="row">
+            <div class="col-12">
+                <div class="card mt-2 shadow-sm">
+                    <div class="card-header">
+                        <b>Busca por OP</b>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <!-- <label for="exampleFormControlInput1" class="form-label">Op</label> -->
+                            <input type="text" v-on:keyup.enter="carregaDados" v-model="codigo" class="form-control"
+                                placeholder="digite o numero do palete">
+
+                            <button class="btn btn-info w-100 mt-3 p-5" @click="carregaDados">
+                                BUSCAR
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="card bg-white card-login shadow-sm p-3 mt-4 mb-4">
+                    <div class="row" v-if="pallet">
+                        <!-- <h3>{{ codigo }}</h3> -->
+                        <div v-if="pallet.status" class="col-md-12">
+                            <ul class="list-group" v-for="pallet in pallet.pallet">
+                                <li class="list-group-item"><b>Apontamento MES: </b>{{ pallet.APONTAMENTO_MES }}
+                                </li>
+                                <li class="list-group-item"><b>OP: </b>{{ pallet.OP }}</li>
+                                <li class="list-group-item"><b>Integrado Mecalux: </b>{{ pallet.RESULTADO }}</li>
+                                <li class="list-group-item"><b>Status: </b>{{ pallet.STATUS }}</li>
+                                <li class="list-group-item"><b>Cod ST: </b>{{ pallet.COD_ST }}</li>
+                                <li class="list-group-item"><b>Data/Hora: </b>{{ pallet.DATA_HORA }}</li>
+                                <li class="list-group-item"><b>Produto: </b>{{ pallet.PRODUTO }}</li>
+                                <li class="list-group-item"><b>Descrição: </b>{{ pallet.DESCRICAO }}</li>
+                                <li class="list-group-item"><b>Qtd: </b>{{ pallet.QUANTIDADE }}</li>
+                                <li class="list-group-item"><b>Erro de integração MES: </b>{{ pallet.ERRO_INTEGRACAO
+                                    }}</li>
+                                <li class="list-group-item"><b>Estorno MES: </b>{{ pallet.ESTORNO_MES }}</li>
+                                <li class="list-group-item"><b>Receita: </b>{{ pallet.RECEITA }}</li>
+                                <li class="list-group-item"><b>Recurso: </b>{{ pallet.RECURSO }}</li>
+                                <!-- <li class="list-group-item"><b>Req Origem: </b>{{ pallet.REQ_ORIGEM }}</li> -->
+                                <!-- <li class="list-group-item"><b>Rotina: </b>{{ pallet.ROTINA }}</li> -->
+                                <li class="list-group-item"><b>Etiqueta Palet: </b>{{ pallet.ST_PALETE }}</li>
+                                <li class="list-group-item"><b>Etiqueta Deletada: </b>{{ pallet.ST_DELETADA }}</li>
+                                <li class="list-group-item"><b>Id Mecalux: </b>{{ pallet.ZF9_FSCMID }}</li>
+                                <li class="list-group-item"><b>Data integração Mecalux: </b>{{ pallet.ZF9_DATA }}
+                                </li>
+                                <li class="list-group-item"><b>Hora integração mecalux: </b>{{ pallet.ZF9_HORA }}
+                                </li>
+                                <li class="list-group-item"><b>Status: </b>{{ pallet.ZF9_STATUS }}</li>
+                            </ul>
+                        </div>
+                        <div v-if="!pallet.status" class="col-md-12">
+                            Nada encontrado
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./js/bootstrap.bundle.js"></script>
+    <script>
+        //objeto contendo todos parametros e metodos do vue
+        var options = {
+            //objeto principal
+            el: '#app',
+            //parametros
+            data: {
+                codigo: '',
+                result: [],
+                loadingDados: false,
+                pallet: null
+            },
+            //metodos
+            methods: {
+                async carregaDados() {
+                    this.loadingDados = true
+                    await axios.get('https://192.168.254.74/bomixKenobi/API/VerificPallet', {
+                        params: {
+                            op: this.codigo
+                        }
+                    }).then(response => {
+                        this.pallet = response.data;
+                        this.loadingDados = false
+                    });
+                },
+            }
+        }
+
+        const vm = new Vue(options);
+
+    </script>
+
+</body>
+
+</html>
