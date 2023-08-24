@@ -26,7 +26,7 @@
                             <input type="text" v-on:keyup.enter="carregaDados" v-model="codigo" class="form-control"
                                 placeholder="digite o numero do palete">
 
-                            <button class="btn btn-info w-100 mt-3 p-5" @click="carregaDados">
+                            <button class="btn btn-info w-100 mt-3 p-2" @click="carregaDados">
                                 BUSCAR
                             </button>
 
@@ -96,7 +96,8 @@
                         }
                     }).then(response => {
                         this.pallet = response.data;
-                        this.loadingDados = false
+                        this.loadingDados = false;
+                        this.codigo = '';
                     });
                 },
             }
