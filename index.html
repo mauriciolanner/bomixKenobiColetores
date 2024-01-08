@@ -16,8 +16,8 @@
     <div class="container" id="app">
         <div class="row">
 
-            <div v-if="successPrint.status" class="alert alert-dismissible fade show" :class="successPrint.tipo"
-                role="alert">
+            <div v-if="successPrint.status" class="alert my-alert alert-dismissible fade show"
+                :class="successPrint.tipo" role="alert">
                 <strong>{{ successPrint.titulo }}</strong> <i class="bi bi-printer"></i>
                 {{ successPrint.mensagem }}
                 <button type="button" class="btn-close" @click="successPrint.status = false"></button>
@@ -25,42 +25,42 @@
 
             <div class="col-12">
                 <div class="card mt-2 shadow-sm">
-                    <div class="card-header">
-                        <b>Busca por OP</b>
-                    </div>
                     <div class="card-body">
-                        <div class="mb-3">
-                            <!-- <label for="exampleFormControlInput1" class="form-label">Op</label> -->
-                            <input type="text" v-on:keyup.enter="modoCompara()" v-model="codigo" class="form-control"
-                                placeholder="digite o numero do palete" autofocus>
-
-                            <button class="btn btn-info w-100 mt-3 p-2" @click="modoCompara()">
-                                PESQUISAR
-                            </button>
-
-                            <button class="btn w-100 mt-4" @click="comparar = !comparar"
-                                :class="{ 'btn-success': comparar, 'btn-info' : !comparar }">
-                                <h4>
-                                    <div v-if="comparar">Desativar Comparar</div>
-                                    <div v-else>Ativar Comparar</div>
-                                </h4>
-                            </button>
-
+                        <div class="row bg-white" v-if="loadingDados">
+                            <div class="col-md-12 text-center">
+                                <div class="spinner-border text-info" style="width: 5rem; height: 5rem" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="card bg-white card-login shadow-sm p-3 mt-4 mb-4">
-                    <div class="row" v-if="loadingDados">
-                        <div class="col-md-12 text-center">
-                            <div class="spinner-border text-info" style="width: 5rem; height: 5rem" role="status">
-                                <span class="visually-hidden">Loading...</span>
+                        <div class="row bg-white">
+                            <div class="col-12">
+                                <!-- <label for="exampleFormControlInput1" class="form-label">Op</label> -->
+                                <input type="text" v-on:keyup="modoCompara()" v-model="codigo" class="form-control"
+                                    placeholder="digite o numero do palete" autofocus>
+                            </div>
+                            <div class="col mt-2">
+                                <button class="btn btn-primary w-100" @click="modoCompara()">
+                                    PESQUISAR
+                                </button>
+                            </div>
+                            <div class="col mt-2">
+                                <button class="btn w-100" @click="comparar = !comparar"
+                                    :class="{ 'btn-success': comparar, 'btn-secondary' : !comparar }">
+                                    <b>
+                                        <div v-if="comparar">Desativar Comparar</div>
+                                        <div v-else>Ativar Comparar</div>
+                                    </b>
+                                </button>
                             </div>
                         </div>
                     </div>
-                    <div class="row" v-if="pallet && pallet.pallet">
+                </div>
+                <div class="card bg-white card-login shadow-sm p-3 mt-2 mb-4">
+                    <div class="row bg-white" v-if="pallet && pallet.pallet">
                         <!-- <h3>{{ codigo }}</h3> -->
                         <div v-if="pallet.status" class="col-md-12">
-                            <div class="card card-login shadow-sm p-3 mt-4 mb-4 text-center" :class="{
+                            <div class="card card-login shadow-sm p-3 mb-2 text-center" :class="{
                                 'bg-success text-light': success.includes(pallet.pallet[0].SOLUCAO),
                                 'bg-warning': warning.includes(pallet.pallet[0].SOLUCAO),
                                 'bg-info text-light': info.includes(pallet.pallet[0].SOLUCAO),
@@ -99,7 +99,7 @@
                         </div>
                     </div>
 
-                    <div class="row"
+                    <div class="row bg-white"
                         v-if="pallet && pallet.status && pallet.etiquetaMecalux && pallet.etiquetaMecalux.length > 0">
 
                         <div class="col-md-12" v-for="toco in pallet.etiquetaMecalux">
@@ -113,7 +113,7 @@
 
                     </div>
 
-                    <div class="row" v-if="pallet && pallet.op && pallet.op.length > 0 && pallet.status">
+                    <div class="row bg-white" v-if="pallet && pallet.op && pallet.op.length > 0 && pallet.status">
                         <div class="col-md-12">
                             <b>OP: {{ pallet.op[0].OP }}</b><br>
                             <b>Cod Prod: {{ pallet.op[0].PRODUTO }}</b><br>
@@ -133,9 +133,9 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="row" v-if="resultComprar != null">
+                    <div class="row bg-white" v-if="resultComprar != null">
                         <div class="col-md-12">
-                            <div class="card card-login shadow-sm p-3 mt-4 mb-4 text-center" :class="{
+                            <div class="card card-login shadow-sm p-3 text-center" :class="{
                                 'bg-success': resultComprar,
                                 'bg-danger text-light': !resultComprar
                             }">
@@ -167,6 +167,7 @@
                 etiquetaDois: null,
                 resultComprar: null,
                 codigo: '',
+                codigoCampo: '',
                 result: [],
                 loadingDados: false,
                 pallet: null,
@@ -201,27 +202,32 @@
             //metodos
             methods: {
                 modoCompara() {
-                    this.pallet = null;
-                    if ((this.etiquetaUm != null && this.etiquetaDois != null) || !this.comparar) {
-                        this.etiquetaUm = null
-                        this.etiquetaDois = null
-                        this.resultComprar = null
-                    }
+                    if (this.codigo.length > 8) {
+                        this.successPrint.status = false
+                        this.pallet = null;
+                        if ((this.etiquetaUm != null && this.etiquetaDois != null) || !this.comparar) {
+                            this.etiquetaUm = null
+                            this.etiquetaDois = null
+                            this.resultComprar = null
+                        }
 
-                    if (this.comparar)
-                        this.compararEtiqueta()
-                    else
-                        this.carregaDados()
+                        if (this.comparar)
+                            this.compararEtiqueta()
+                        else
+                            this.carregaDados()
+                    }
                 },
                 compararEtiqueta() {
+                    this.successPrint.status = false
                     this.pallet = null;
-                    if (this.etiquetaUm == null)
+                    if (this.etiquetaUm == null) {
                         this.etiquetaUm = this.codigo
-                    else if (this.etiquetaDois == null)
+                        this.codigo = ''
+                    } else if (this.etiquetaDois == null) {
                         this.etiquetaDois = this.codigo
-                    if (this.etiquetaUm != null && this.etiquetaDois != null)
+                        this.codigo = ''
+                    } if (this.etiquetaUm != null && this.etiquetaDois != null)
                         this.resultComprar = (this.etiquetaUm.substring(0, 8) == this.etiquetaDois.substring(0, 8))
-
                 },
                 dateTask(dateIni) {
                     var date = new Date(dateIni);
@@ -247,6 +253,7 @@
                     return retorno;
                 },
                 async printEtiqueta(cod, id) {
+                    this.successPrint.status = false
                     await axios.get('https://192.168.254.74/bomixKenobi/Api/etiquetaMecalux/opem/print',
                         {
                             params: {
@@ -262,9 +269,8 @@
                                 this.successPrint.mensagem = 'Etiqueta Impressa com sucesso'
                                 this.successPrint.tipo = 'alert-success'
                                 this.loading = false
-                                this.dadosConsulta(this.page)
-                                if (printer == 'PDF')
-                                    this.viewDoc(cod)
+                                this.codigo = cod
+                                this.carregaDados()
                             } else {
                                 this.successPrint.status = true
                                 this.successPrint.titulo = response.data.title
@@ -277,6 +283,7 @@
                         })
                 },
                 async carregaDados() {
+                    this.successPrint.status = false
                     this.mensagemRetorno = ''
                     this.loadingDados = true
                     await axios.get('https://192.168.254.74/bomixKenobi/API/VerificPallet', {
@@ -286,7 +293,9 @@
                     }).then(response => {
                         this.pallet = response.data;
                         this.loadingDados = false
+                        this.codigo = ''
                     });
+                    this.codigo = ''
                 },
             }
         }
