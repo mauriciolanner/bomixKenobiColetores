@@ -102,19 +102,23 @@
                         v-if="pallet && pallet.status && pallet.etiquetaMecalux && pallet.etiquetaMecalux.length > 0">
 
                         <div class="col-md-12" v-for="toco in pallet.etiquetaMecalux">
-                            <div class="card bg-warning">
+                            <div class="card bg-warning p-2">
                                 <div class="row">
                                     <div class="col-12">
                                         OP: {{ toco.OP }} MES: {{ toco.APONTAMENTO_MES }} QTD: {{
                                         parseInt(toco.QUANTIDADE) }}
                                         REC: {{ toco.RECURSO }}
                                     </div>
-                                    <div class="col-12">
-                                        <button class="btn btn-btn-light w-100 mt-3 p-2"
+                                    <div v-if="!confirmaLocal" class="col-md-12">
+                                        <input type="text" v-on:keyup="confirmaLocalCode()" v-model="codigo"
+                                            class="form-control" placeholder="Confirma sua localização" autofocus>
+                                    </div>
+                                    <div v-else class="col-12">
+                                        <button class="btn btn-light w-100 mt-3 p-2"
                                             @click="printEtiqueta(toco.APONTAMENTO_MES, toco.id, 'GRANDE1')">
                                             IMPRIMIR PROD 1
                                         </button>
-                                        <button class="btn btn-btn-light w-100 mt-3 p-2"
+                                        <button class="btn btn-light w-100 mt-3 p-2"
                                             @click="printEtiqueta(toco.APONTAMENTO_MES, toco.id, 'GRANDE2')">
                                             IMPRIMIR PROD 2
                                         </button>
@@ -174,6 +178,7 @@
                     mensagem: '',
                     tipo: ''
                 },
+                confirmaLocal: false,
                 comparar: false,
                 etiquetaUm: null,
                 etiquetaDois: null,
@@ -213,7 +218,14 @@
             },
             //metodos
             methods: {
+                confirmaLocalCode() {
+                    if (this.codigo == '81dc9bdb52d04dc20036dbd8313ed055')
+                        this.confirmaLocal = true;
+
+                    this.codigo = '';
+                },
                 modoCompara() {
+                    this.confirmaLocal = false;
                     if (this.codigo.length > 8) {
                         this.successPrint.status = false
                         this.pallet = null;
@@ -230,6 +242,7 @@
                     }
                 },
                 compararEtiqueta() {
+                    this.confirmaLocal = false;
                     this.successPrint.status = false
                     this.pallet = null;
                     if (this.etiquetaUm == null) {
@@ -280,6 +293,7 @@
                                 this.successPrint.titulo = 'Sucesso!'
                                 this.successPrint.mensagem = 'Etiqueta Impressa com sucesso'
                                 this.successPrint.tipo = 'alert-success'
+                                this.confirmaLocal = false
                                 this.loading = false
                                 this.codigo = cod
                                 this.carregaDados()
@@ -293,8 +307,10 @@
                             this.erroPrint = true
                             this.loading = false
                         })
+                    this.confirmaLocal = false;
                 },
                 async carregaDados() {
+                    this.confirmaLocal = false;
                     this.successPrint.status = false
                     this.mensagemRetorno = ''
                     this.loadingDados = true
