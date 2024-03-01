@@ -279,14 +279,12 @@
                 },
                 async printEtiqueta(cod, id, imp) {
                     this.successPrint.status = false
-                    await axios.get('https://192.168.254.74/bomixKenobi/Api/etiquetaMecalux/opem/print',
+                    await axios.post('https://192.168.254.74/bomixKenobi/Api/etiquetaMecalux/opem/print',
                         {
-                            params: {
-                                cod: cod,
-                                printer: imp,
-                                id: id,
-                                coletor: 1
-                            }
+                            cod: cod,
+                            printer: "{ ip: '\\192.168.254.71\192.168.254.236'}",
+                            id: id,
+                            coletor: 1
                         })
                         .then(response => {
                             if (response.data.status) {
