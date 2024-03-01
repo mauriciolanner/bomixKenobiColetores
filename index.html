@@ -115,11 +115,11 @@
                                     </div>
                                     <div v-else class="col-12">
                                         <button class="btn btn-light w-100 mt-3 p-2"
-                                            @click="printEtiqueta(toco.APONTAMENTO_MES, toco.id, 'GRANDE1')">
+                                            @click="printEtiqueta(toco.APONTAMENTO_MES, toco.id, '3')">
                                             IMPRIMIR PROD 1
                                         </button>
                                         <button class="btn btn-light w-100 mt-3 p-2"
-                                            @click="printEtiqueta(toco.APONTAMENTO_MES, toco.id, 'GRANDE2')">
+                                            @click="printEtiqueta(toco.APONTAMENTO_MES, toco.id, '4')">
                                             IMPRIMIR PROD 2
                                         </button>
                                     </div>
@@ -279,12 +279,14 @@
                 },
                 async printEtiqueta(cod, id, imp) {
                     this.successPrint.status = false
-                    await axios.post('https://192.168.254.74/bomixKenobi/Api/etiquetaMecalux/opem/print',
+                    await axios.get('https://192.168.254.74/bomixKenobi/Api/etiquetaMecalux/opem/print',
                         {
-                            cod: cod,
-                            printer: "{ ip: '\\192.168.254.71\192.168.254.236'}",
-                            id: id,
-                            coletor: 1
+                            params: {
+                                cod: cod,
+                                printer: imp,
+                                id: id,
+                                coletor: 1
+                            }
                         })
                         .then(response => {
                             if (response.data.status) {
